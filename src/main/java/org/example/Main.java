@@ -80,34 +80,47 @@ public class Main {
         for (int i = 0; i < 1000; i++) {
             threeDigitHashMap.put(i, 0);
         }
+        Integer lastNumber = -1;
         Scanner scanner = new Scanner(new File(THREE_DIGIT_FILE_NAME));
         scanner.useDelimiter("\n");
         while (scanner.hasNext()) {
             String value = scanner.next().trim();
-            Integer intValue = Integer.parseInt(value);
-            threeDigitHashMap.put(intValue, threeDigitHashMap.get(intValue) + 1);
+            lastNumber = Integer.parseInt(value);
+            threeDigitHashMap.put(lastNumber, threeDigitHashMap.get(lastNumber) + 1);
         }
         List<Map.Entry<Integer, Integer>> entryList = new LinkedList<>(threeDigitHashMap.entrySet());
         Collections.sort(entryList, (Map.Entry.comparingByValue()));
 
         writeToExistedFile("Date: " + new SimpleDateFormat("dd-MM-YYYY").format(new Date()) + "\n", "./result.md");
+        writeToExistedFile("Result has been occurred: " + threeDigitHashMap.get(lastNumber) + " times before\n", "./result.md");
 
         writeToExistedFile("Top 10 most frequently: \n", "./result.md");
         for (int i=0; i<10; i++) {
             writeToExistedFile(String.format("%03d %s\n", entryList.get(entryList.size()-1-i).getKey(), entryList.get(entryList.size()-1-i).getValue()), "./result.md");
+            if (entryList.get(entryList.size()-1-i).getKey().equals(lastNumber)) {
+                writeToExistedFile("~BINGO~", "./result.md");
+            }
         }
-        writeToExistedFile("Random 10 not exist: \n", "./result.md");
+        writeToExistedFile("All not exist: \n", "./result.md");
         List<Integer> notExistNumber = new ArrayList<>();
         int i=0;
         while (entryList.get(i).getValue() == 0) {
+            writeToExistedFile(String.format("%03d ", entryList.get(i).getKey()), "./result.md");
             notExistNumber.add(entryList.get(i).getKey());
+            if (entryList.get(i).getKey().equals(lastNumber)) {
+                writeToExistedFile("~BINGO~\n", "./result.md");
+            }
             i++;
         }
+        writeToExistedFile("\nRandom 10 not exist: \n", "./result.md");
         int randomCount = 0;
         int randomIndex;
         while (randomCount < 10) {
             randomIndex = (int) (Math.random() * notExistNumber.size());
             writeToExistedFile(String.format("%03d\n", notExistNumber.get(randomIndex)), "./result.md");
+            if (notExistNumber.get(randomIndex).equals(lastNumber)) {
+                writeToExistedFile("~BINGO~\n", "./result.md");
+            }
             notExistNumber.remove(randomIndex);
             randomCount++;
         }
