@@ -33,7 +33,7 @@ public class Main {
     private static void getAndWriteDataFromDate(String startDate) throws ParseException {
         OkHttpClient okHttpClient = new OkHttpClient();
         Date date = new SimpleDateFormat("yyyy-MM-dd").parse(startDate);
-        Date currentDate = new SimpleDateFormat("yyyy-MM-dd").parse(new Date().toString());;
+        Date currentDate = new SimpleDateFormat("yyyy-MM-dd").parse(new SimpleDateFormat("yyyy-MM-dd").format(new Date()));
 
         while (currentDate.after(date)) {
             try {
