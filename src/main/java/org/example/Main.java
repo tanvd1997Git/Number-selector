@@ -24,7 +24,7 @@ public class Main {
     static String TWO_DIGIT_FILE_NAME = "./2-end-digit-xsmb-from-26-08-2020.txt";
 
     public static void main(String[] args) throws Exception {
-        getAndWriteDataFromDate("2023-05-23");
+        getAndWriteDataFromDate("2023-05-24");
         handle();
     }
 
@@ -33,7 +33,7 @@ public class Main {
         Date date = new SimpleDateFormat("yyyy-MM-dd").parse(startDate);
         Date currentDate = new Date();
 
-        while (currentDate.after(date) || currentDate.equals(date)) {
+        while (currentDate.after(date)) {
             try {
                 Integer resultOfDate = getResultOfDate(okHttpClient, date);
                 writeToExistedFile(resultOfDate % 1000 + "\r\n", "./3-end-digit-xsmb-from-26-08-2020.txt");
@@ -92,7 +92,7 @@ public class Main {
         Collections.sort(entryList, (Map.Entry.comparingByValue()));
 
         writeToExistedFile("Date: " + new SimpleDateFormat("dd-MM-YYYY").format(new Date()) + "\n", "./result.md");
-        writeToExistedFile("Result has been occurred: " + threeDigitHashMap.get(lastNumber) + " times before\n", "./result.md");
+        writeToExistedFile("Result has been occurred: " + (threeDigitHashMap.get(lastNumber) - 1) + " times before\n", "./result.md");
 
         writeToExistedFile("Top 10 most frequently: \n", "./result.md");
         for (int i=0; i<10; i++) {
