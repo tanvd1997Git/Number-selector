@@ -24,7 +24,9 @@ public class Main {
     static String TWO_DIGIT_FILE_NAME = "./2-end-digit-xsmb-from-26-08-2020.txt";
 
     public static void main(String[] args) throws Exception {
-        getAndWriteDataFromDate("2023-05-24");
+        Date today = new Date();
+        Date targetDay = DateUtils.addDays(today, -1);
+        getAndWriteDataFromDate(new SimpleDateFormat("yyyy-MM-dd").format(targetDay));
         handle();
     }
 
@@ -37,23 +39,25 @@ public class Main {
             try {
                 Integer resultOfDate = getResultOfDate(okHttpClient, date);
                 writeToExistedFile(resultOfDate % 1000 + "\r\n", "./3-end-digit-xsmb-from-26-08-2020.txt");
-            } catch (Exception e){
-                e.printStackTrace();
-            }
+            } catch (Exception ignore){}
             date = DateUtils.addDays(date, 1);
         }
     }
 
     private static Integer getResultOfDate(OkHttpClient client, Date date) throws IOException {
-        Request request = new Request.Builder()
-                .url("https://api.tinhtienso.com/api/result?date=" + new SimpleDateFormat("yyyy-MM-dd").format(date))
-                .build();
+        try {
+            Request request = new Request.Builder()
+                    .url("https://api.tinhtienso.com/api/result?date=" + new SimpleDateFormat("yyyy-MM-dd").format(date))
+                    .build();
 
-        Call call = client.newCall(request);
-        Response response = call.execute();
-        String responseBody = response.body().string();
-        String resultStr = JsonIterator.deserialize(responseBody).toString("data", "north", 0, "result", "special", 0);
-        return Integer.parseInt(resultStr);
+            Call call = client.newCall(request);
+            Response response = call.execute();
+            String responseBody = response.body().string();
+            String resultStr = JsonIterator.deserialize(responseBody).toString("data", "north", 0, "result", "special", 0);
+            return Integer.parseInt(resultStr);
+        } catch (Exception e) {
+            throw e;
+        }
     }
 
     private static void writeToExistedFile(String data, String filePath) {
@@ -124,5 +128,6 @@ public class Main {
             notExistNumber.remove(randomIndex);
             randomCount++;
         }
+        System.out.println("Done!");
     }
 }
