@@ -96,7 +96,7 @@ public class Main {
         Collections.sort(entryList, (Map.Entry.comparingByValue()));
 
         writeToExistedFile("Today is: " + new SimpleDateFormat("dd-MM-YYYY").format(new Date()) + "\n", "./result.md");
-        writeToExistedFile("Yesterday result is " + lastNumber + ",result has been occurred: " + (threeDigitHashMap.get(lastNumber) - 1) + " times before\n", "./result.md");
+        writeToExistedFile("Yesterday result is " + lastNumber + ", result has been occurred: " + (threeDigitHashMap.get(lastNumber) - 1) + " times before\n", "./result.md");
 
         writeToExistedFile("Top 10 most frequently: \n", "./result.md");
         for (int i=0; i<10; i++) {
