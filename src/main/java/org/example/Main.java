@@ -24,21 +24,22 @@ public class Main {
     static String TWO_DIGIT_FILE_NAME = "./2-end-digit-xsmb-from-26-08-2020.txt";
 
     public static void main(String[] args) throws Exception {
-        Date today = new Date();
-        Date targetDay = DateUtils.addDays(today, -1);
-        getAndWriteDataFromDate(new SimpleDateFormat("yyyy-MM-dd").format(targetDay));
+        String lastRun = new Scanner(new File("./last-run.txt")).next().trim();
+        getAndWriteDataFromDate(lastRun);
         handle();
     }
 
     private static void getAndWriteDataFromDate(String startDate) throws ParseException {
         OkHttpClient okHttpClient = new OkHttpClient();
         Date date = new SimpleDateFormat("yyyy-MM-dd").parse(startDate);
+        date = DateUtils.addDays(date, 1);
         Date currentDate = new SimpleDateFormat("yyyy-MM-dd").parse(new SimpleDateFormat("yyyy-MM-dd").format(new Date()));
 
         while (currentDate.after(date)) {
             try {
                 Integer resultOfDate = getResultOfDate(okHttpClient, date);
                 writeToExistedFile(resultOfDate % 1000 + "\r\n", "./3-end-digit-xsmb-from-26-08-2020.txt");
+                replaceFileContent(new SimpleDateFormat("yyyy-MM-dd").format(date), "./last-run.txt");
             } catch (Exception ignore){}
             date = DateUtils.addDays(date, 1);
         }
@@ -63,6 +64,14 @@ public class Main {
     private static void writeToExistedFile(String data, String filePath) {
         try {
             Files.write(Paths.get(filePath), data.getBytes(), StandardOpenOption.APPEND);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    private static void replaceFileContent(String data, String filePath) {
+        try {
+            Files.write(Paths.get(filePath), data.getBytes(), StandardOpenOption.TRUNCATE_EXISTING);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -96,7 +105,7 @@ public class Main {
         Collections.sort(entryList, (Map.Entry.comparingByValue()));
 
         writeToExistedFile("Today is: " + new SimpleDateFormat("dd-MM-YYYY").format(new Date()) + "\n", "./result.md");
-        writeToExistedFile("Yesterday result is " + lastNumber + ", result has been occurred: " + (threeDigitHashMap.get(lastNumber) - 1) + " times before\n", "./result.md");
+        writeToExistedFile(String.format("Yesterday result is %03d, result has been occurred: %d times before\n", lastNumber, threeDigitHashMap.get(lastNumber) - 1), "./result.md");
 
         writeToExistedFile("Top 10 most frequently: \n", "./result.md");
         for (int i=0; i<10; i++) {
@@ -116,10 +125,10 @@ public class Main {
             }
             i++;
         }
-        writeToExistedFile("\nRandom 10 not exist: \n", "./result.md");
+        writeToExistedFile("\nRandom 30 not exist: \n", "./result.md");
         int randomCount = 0;
         int randomIndex;
-        while (randomCount < 10) {
+        while (randomCount < 30) {
             randomIndex = (int) (Math.random() * notExistNumber.size());
             writeToExistedFile(String.format("%03d\n", notExistNumber.get(randomIndex)), "./result.md");
             if (notExistNumber.get(randomIndex).equals(lastNumber)) {
