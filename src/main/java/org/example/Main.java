@@ -26,21 +26,23 @@ public class Main {
     public static void main(String[] args) throws Exception {
         String lastRun = new Scanner(new File("./last-run.txt")).next().trim();
         getAndWriteDataFromDate(lastRun);
-        handle();
+        System.out.println("Done !");
     }
 
     private static void getAndWriteDataFromDate(String startDate) throws ParseException {
         OkHttpClient okHttpClient = new OkHttpClient();
         Date date = new SimpleDateFormat("yyyy-MM-dd").parse(startDate);
         date = DateUtils.addDays(date, 1);
-        Date currentDate = new SimpleDateFormat("yyyy-MM-dd").parse(new SimpleDateFormat("yyyy-MM-dd").format(new Date()));
 
-        while (currentDate.after(date)) {
+        while (true) {
             try {
                 Integer resultOfDate = getResultOfDate(okHttpClient, date);
-                writeToExistedFile(resultOfDate % 1000 + "\r\n", "./3-end-digit-xsmb-from-26-08-2020.txt");
+                writeToExistedFile(String.format("%3d\r\n", resultOfDate % 1000), "./3-end-digit-xsmb-from-26-08-2020.txt");
                 replaceFileContent(new SimpleDateFormat("yyyy-MM-dd").format(date), "./last-run.txt");
-            } catch (Exception ignore){}
+                handle(date);
+            } catch (Exception ignore) {
+                break;
+            }
             date = DateUtils.addDays(date, 1);
         }
     }
@@ -87,7 +89,7 @@ public class Main {
         }
     }
 
-    private static void handle() throws FileNotFoundException {
+    private static void handle(Date date) throws FileNotFoundException {
         // Handle for 3-digits
         Map<Integer, Integer> threeDigitHashMap = new HashMap<>();
         for (int i = 0; i < 1000; i++) {
@@ -104,8 +106,11 @@ public class Main {
         List<Map.Entry<Integer, Integer>> entryList = new LinkedList<>(threeDigitHashMap.entrySet());
         Collections.sort(entryList, (Map.Entry.comparingByValue()));
 
-        writeToExistedFile("Today is: " + new SimpleDateFormat("dd-MM-YYYY").format(new Date()) + "\n", "./result.md");
-        writeToExistedFile(String.format("Yesterday result is %03d, result has been occurred: %d times before\n", lastNumber, threeDigitHashMap.get(lastNumber) - 1), "./result.md");
+        writeToExistedFile(String.format("%s result is %03d, result has been occurred: %d times before\n",
+                new SimpleDateFormat("dd/MM/yyyy").format(date), lastNumber,
+                threeDigitHashMap.get(lastNumber) - 1), "./result.md");
+
+        writeToExistedFile(String.valueOf(threeDigitHashMap.get(lastNumber) - 1) + "\r\n", "./occurrent.txt");
 
         writeToExistedFile("Top 10 most frequently: \n", "./result.md");
         for (int i=0; i<10; i++) {
@@ -137,6 +142,5 @@ public class Main {
             notExistNumber.remove(randomIndex);
             randomCount++;
         }
-        System.out.println("Done!");
     }
 }
