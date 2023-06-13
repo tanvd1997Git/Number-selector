@@ -106,40 +106,50 @@ public class Main {
         List<Map.Entry<Integer, Integer>> entryList = new LinkedList<>(threeDigitHashMap.entrySet());
         Collections.sort(entryList, (Map.Entry.comparingByValue()));
 
-        writeToExistedFile(String.format("%s result is %03d, result has been occurred: %d times before\n",
+        writeToExistedFile(String.format("\n### %s result is %03d, result has been occurred: %d times before\n",
                 new SimpleDateFormat("dd/MM/yyyy").format(date), lastNumber,
                 threeDigitHashMap.get(lastNumber) - 1), "./result.md");
 
-        writeToExistedFile(String.valueOf(threeDigitHashMap.get(lastNumber) - 1) + "\r\n", "./occurrent.txt");
+        writeToExistedFile(threeDigitHashMap.get(lastNumber) - 1 + "\r\n", "./occurrences.txt");
 
         writeToExistedFile("Top 10 most frequently: \n", "./result.md");
         for (int i=0; i<10; i++) {
-            writeToExistedFile(String.format("%03d %s\n", entryList.get(entryList.size()-1-i).getKey(), entryList.get(entryList.size()-1-i).getValue()), "./result.md");
-            if (entryList.get(entryList.size()-1-i).getKey().equals(lastNumber)) {
-                writeToExistedFile("~BINGO~", "./result.md");
+            StringBuilder contentToWrite = new StringBuilder();
+            contentToWrite.append(String.format("%03d %s", entryList.get(entryList.size()-1-i).getKey(),
+                    entryList.get(entryList.size()-1-i).getValue()));
+            if (i != 9) {
+                contentToWrite.append("; ");
+            } else {
+                contentToWrite.append("\n");
             }
+            writeToExistedFile(contentToWrite.toString(), "./result.md");
         }
-        writeToExistedFile("All not exist: \n", "./result.md");
-        List<Integer> notExistNumber = new ArrayList<>();
-        int i=0;
-        while (entryList.get(i).getValue() == 0) {
-            writeToExistedFile(String.format("%03d ", entryList.get(i).getKey()), "./result.md");
-            notExistNumber.add(entryList.get(i).getKey());
-            if (entryList.get(i).getKey().equals(lastNumber)) {
-                writeToExistedFile("~BINGO~\n", "./result.md");
+        resultByOccurrenceTimes(0, entryList, 30);
+        resultByOccurrenceTimes(1, entryList, 20);
+        resultByOccurrenceTimes(2, entryList, 10);
+    }
+
+    private static void resultByOccurrenceTimes(int occurrence, List<Map.Entry<Integer, Integer>> entryList, int numOfPrediction) {
+        List<Integer> listWithOccurrence = new ArrayList<>();
+        entryList.forEach(e -> {
+            if (e.getValue() == occurrence) {
+                listWithOccurrence.add(e.getKey());
             }
-            i++;
-        }
-        writeToExistedFile("\nRandom 30 not exist: \n", "./result.md");
+        });
+        writeToExistedFile(String.format("# %s occurrence %s times: \n", listWithOccurrence.size(), occurrence), "./result.md");
+        listWithOccurrence.forEach(e -> {
+            writeToExistedFile(String.format("%03d ", e), "./result.md");
+        });
+        writeToExistedFile(String.format("\nRandom %s predict number: \n", numOfPrediction), "./result.md");
         int randomCount = 0;
         int randomIndex;
-        while (randomCount < 30) {
-            randomIndex = (int) (Math.random() * notExistNumber.size());
-            writeToExistedFile(String.format("%03d\n", notExistNumber.get(randomIndex)), "./result.md");
-            if (notExistNumber.get(randomIndex).equals(lastNumber)) {
-                writeToExistedFile("~BINGO~\n", "./result.md");
+        while (randomCount < numOfPrediction) {
+            randomIndex = (int) (Math.random() * listWithOccurrence.size());
+            writeToExistedFile(String.format("%03d  ", listWithOccurrence.get(randomIndex)), "./result.md");
+            if ((randomCount + 1) % 10 == 0) {
+                writeToExistedFile("\n", "./result.md");
             }
-            notExistNumber.remove(randomIndex);
+            listWithOccurrence.remove(randomIndex);
             randomCount++;
         }
     }
