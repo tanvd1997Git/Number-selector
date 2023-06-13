@@ -136,7 +136,7 @@ public class Main {
                 listWithOccurrence.add(e.getKey());
             }
         });
-        writeToExistedFile(String.format("# %s number occur %s times: \n", listWithOccurrence.size(), occurrence), "./result.md");
+        writeToExistedFile(String.format("# %s numbers occur %s times: \n", listWithOccurrence.size(), occurrence), "./result.md");
         listWithOccurrence.forEach(e -> {
             writeToExistedFile(String.format("%03d ", e), "./result.md");
         });
