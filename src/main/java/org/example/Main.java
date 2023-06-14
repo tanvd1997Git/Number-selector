@@ -106,7 +106,7 @@ public class Main {
         List<Map.Entry<Integer, Integer>> entryList = new LinkedList<>(threeDigitHashMap.entrySet());
         Collections.sort(entryList, (Map.Entry.comparingByValue()));
 
-        writeToExistedFile(String.format("\n### %s result is %03d, result has been occurred: %d times before\n",
+        writeToExistedFile(String.format("\n# %s result is %03d, result has been occurred: %d times before\n",
                 new SimpleDateFormat("dd/MM/yyyy").format(date), lastNumber,
                 threeDigitHashMap.get(lastNumber) - 1), "./result.md");
 
@@ -136,7 +136,7 @@ public class Main {
                 listWithOccurrence.add(e.getKey());
             }
         });
-        writeToExistedFile(String.format("# %s numbers occur %s times: \n", listWithOccurrence.size(), occurrence), "./result.md");
+        writeToExistedFile(String.format("### %s numbers occur %s times: \n", listWithOccurrence.size(), occurrence), "./result.md");
         listWithOccurrence.forEach(e -> {
             writeToExistedFile(String.format("%03d ", e), "./result.md");
         });
